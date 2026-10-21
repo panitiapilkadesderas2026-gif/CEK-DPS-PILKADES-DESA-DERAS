@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#14532d">
+<title>Cek DPS Pilkades Desa Deras 2026</title>
+<style>
+:root{--green:#14532d;--green2:#166534;--mint:#dcfce7;--ink:#17211b;--muted:#647067;--line:#e3e9e4;--bg:#f4f7f4}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+.hero{background:linear-gradient(135deg,#14532d,#15803d);color:white;padding:32px 18px 54px;text-align:center}
+.mark{margin:auto auto 12px;width:58px;height:58px;border:1px solid #ffffff70;border-radius:18px;display:grid;place-items:center;font-size:28px;background:#ffffff18}
+h1{font-size:clamp(23px,5vw,34px);line-height:1.15;margin:0 0 10px}.hero p{margin:0;color:#e6f5e9;font-size:14px}
+.wrap{width:min(760px,calc(100% - 28px));margin:-28px auto 36px;position:relative}
+.panel{background:white;border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 10px 30px #183d2510}
+.stats{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 2px 16px;margin-bottom:16px;border-bottom:1px solid var(--line)}
+.stats small{display:block;color:var(--muted);font-size:12px}.stats strong{font-size:24px;color:var(--green)}
+.searchlabel{font-weight:700;font-size:14px;display:block;margin-bottom:8px}
+.searchbox{display:flex;gap:8px}.searchbox input{min-width:0;flex:1;border:1px solid #cbd5ce;border-radius:12px;padding:14px;font:inherit;outline:none}
+.searchbox input:focus{border-color:var(--green2);box-shadow:0 0 0 3px #16a34a20}
+button{border:0;border-radius:12px;background:var(--green);color:white;padding:0 18px;font:600 14px inherit;cursor:pointer}
+.hint{font-size:12px;color:var(--muted);margin:9px 0 18px}
+.resulthead{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:18px 0 10px;font-size:14px}
+.resulthead span{color:var(--muted);font-size:12px}
+.result{border:1px solid var(--line);border-radius:14px;padding:15px;margin-top:10px;background:#fff}
+.person{font-size:16px;font-weight:750;text-transform:uppercase;margin-bottom:8px}
+.detail{display:flex;gap:9px;align-items:flex-start;color:#46534a;font-size:13px;line-height:1.5;margin-top:5px}
+.tag{display:inline-block;background:var(--mint);color:#14532d;border-radius:7px;padding:5px 9px;font-size:12px;font-weight:750;margin-top:10px}
+.empty{padding:25px 12px;text-align:center;color:var(--muted);font-size:14px;background:#f8faf8;border-radius:12px}
+footer{text-align:center;color:var(--muted);font-size:12px;line-height:1.6;padding:18px 8px}
+.note{background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:12px;font-size:12px;color:#854d0e;line-height:1.5;margin-top:16px}
+@media(max-width:480px){.panel{padding:16px}.searchbox{flex-direction:column}.searchbox button{padding:13px}.stats strong{font-size:21px}}
+</style>
+</head>
+<body>
+<header class="hero">
+ <div class="mark" aria-hidden="true">✓</div>
+ <h1>Cek DPS Pilkades<br>Desa Deras Tahun 2026</h1>
+ <p>Daftar Pemilih Sementara · Desa Deras, Kecamatan Kedungjati</p>
+</header>
+<main class="wrap">
+ <section class="panel">
+  <div class="stats"><div><small>Jumlah pemilih dalam DPS</small><strong id="total">Memuat…</strong></div><div style="text-align:right"><small>Wilayah</small><strong style="font-size:17px">Desa Deras</strong></div></div>
+  <label class="searchlabel" for="q">Cari nama atau alamat</label>
+  <div class="searchbox"><input id="q" type="search" placeholder="Contoh: Siti / Dusun Deras / RT 001" autocomplete="off"><button id="clear" type="button">Hapus</button></div>
+  <p class="hint">Ketik nama lengkap atau sebagian nama. Bisa juga cari berdasarkan dusun, RT/RW, atau nomor TPS.</p>
+  <div class="resulthead"><b id="heading">Petunjuk pencarian</b><span id="count"></span></div>
+  <div id="results"><div class="empty">Masukkan nama atau alamat pada kolom pencarian untuk melihat hasil.</div></div>
+  <div class="note">DPS adalah Daftar Pemilih Sementara. Jika terdapat data yang tidak sesuai atau nama belum tercantum, silakan konfirmasi kepada Panitia Pilkades Desa Deras.</div>
+ </section>
+ <footer>Panitia Pemilihan Kepala Desa Deras · Tahun 2026<br>Informasi ditampilkan sesuai data DPS yang disediakan panitia.</footer>
+</main>
+<script>
+const q=document.getElementById('q'), results=document.getElementById('results'), heading=document.getElementById('heading'), count=document.getElementById('count');
+let people=[];
+const norm=s=>(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('id').trim();
+function show(){
+ const term=norm(q.value);
+ if(!term){heading.textContent='Petunjuk pencarian';count.textContent='';results.innerHTML='<div class="empty">Masukkan nama atau alamat pada kolom pencarian untuk melihat hasil.</div>';return}
+ const found=people.filter(p=>norm(p.nama+' '+p.alamat+' '+p.tps).includes(term)).slice(0,100);
+ heading.textContent='Hasil pencarian';count.textContent=found.length===100?'Menampilkan 100 hasil pertama':`${found.length} hasil`;
+ if(!found.length){results.innerHTML='<div class="empty">Data tidak ditemukan. Periksa ejaan nama atau coba kata kunci lain.</div>';return}
+ results.innerHTML=found.map(p=>`<article class="result"><div class="person">${escapeHtml(p.nama)}</div><div class="detail"><span>⌂</span><span>${escapeHtml(p.alamat)}</span></div><div class="tag">${escapeHtml(p.tps)}</div></article>`).join('');
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+fetch('./data.json').then(r=>{if(!r.ok)throw Error('data');return r.json()}).then(data=>{people=data;document.getElementById('total').textContent=data.length.toLocaleString('id-ID');}).catch(()=>{document.getElementById('total').textContent='—';results.innerHTML='<div class="empty">Data belum berhasil dimuat. Pastikan file data.json ikut diunggah bersama website.</div>'});
+q.addEventListener('input',show);document.getElementById('clear').addEventListener('click',()=>{q.value='';show();q.focus()});
+</script>
+</body></html>
